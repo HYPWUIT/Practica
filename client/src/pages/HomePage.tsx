@@ -1,13 +1,15 @@
 import { zodResolver } from '@hookform/resolvers/zod'
+import { useQuery } from '@tanstack/react-query'
 import { useForm } from 'react-hook-form'
 import { Link } from 'react-router'
+import { fetchBestsellers, queryKeys } from '../api/catalog'
 import ProductArt from '../components/ProductArt'
 import ProductGrid from '../components/ProductGrid'
+import ProductGridSkeleton from '../components/skeletons/ProductGridSkeleton'
 import Button from '../components/ui/Button'
 import Input from '../components/ui/Input'
 import { buttonClasses } from '../components/ui/button-styles'
 import { categoryOptions } from '../data/filters'
-import { products } from '../data/products'
 import { useToast } from '../hooks/useToast'
 import { newsletterSchema } from '../lib/schemas'
 
@@ -23,7 +25,11 @@ const tileColors = {
 
 function HomePage() {
   const { notify } = useToast()
-  const bestsellers = products.filter((product) => product.bestseller).slice(0, 3)
+
+  const { data: bestsellers = [], isPending: bestsellersPending } = useQuery({
+    queryKey: queryKeys.bestsellers(3),
+    queryFn: () => fetchBestsellers(3),
+  })
 
   const {
     register,
@@ -111,7 +117,11 @@ function HomePage() {
             See all best sales
           </Link>
         </div>
-        <ProductGrid products={bestsellers} />
+        {bestsellersPending ? (
+          <ProductGridSkeleton count={3} />
+        ) : (
+          <ProductGrid products={bestsellers} />
+        )}
       </section>
 
       {/* Newsletter */}

@@ -1,7 +1,12 @@
+import { useQuery } from '@tanstack/react-query'
 import { useState } from 'react'
 import { Link, useParams } from 'react-router'
+import { fetchProduct, fetchRelated, queryKeys } from '../api/catalog'
 import ProductArt from '../components/ProductArt'
 import ProductGrid from '../components/ProductGrid'
+import QueryError from '../components/QueryError'
+import ProductDetailSkeleton from '../components/skeletons/ProductDetailSkeleton'
+import ProductGridSkeleton from '../components/skeletons/ProductGridSkeleton'
 import Badge from '../components/ui/Badge'
 import Button from '../components/ui/Button'
 import EmptyState from '../components/ui/EmptyState'
@@ -9,7 +14,7 @@ import PriceTag from '../components/ui/PriceTag'
 import QuantityStepper from '../components/ui/QuantityStepper'
 import { buttonClasses } from '../components/ui/button-styles'
 import { MAX_QTY } from '../context/cart-context'
-import { getProductBySlug, products } from '../data/products'
+
 import {
   categoryLabels,
   colorLabels,
@@ -18,14 +23,6 @@ import {
 import { useCart } from '../hooks/useCart'
 import { useToast } from '../hooks/useToast'
 import { formatDimensions } from '../lib/format'
-import type { Product } from '../types/product'
-
-/** Same category, never itself, capped so the strip stays one row. */
-function relatedTo(product: Product): Product[] {
-  return products
-    .filter((p) => p.category === product.category && p.id !== product.id)
-    .slice(0, 3)
-}
 
 function Spec({ label, value }: { label: string; value: string }) {
   return (
@@ -37,8 +34,7 @@ function Spec({ label, value }: { label: string; value: string }) {
 }
 
 function ProductDetailPage() {
-  const { slug } = useParams()
-  const product = slug ? getProductBySlug(slug) : undefined
+  const { slug = '' } = useParams()
 
   const { add } = useCart()
   const { notify } = useToast()
@@ -50,6 +46,35 @@ function ProductDetailPage() {
   if (lastSlug !== slug) {
     setLastSlug(slug)
     setQty(1)
+  }
+
+  const {
+    data: product,
+    isPending,
+    isError,
+    refetch,
+  } = useQuery({
+    queryKey: queryKeys.product(slug),
+    queryFn: () => fetchProduct(slug),
+    enabled: slug !== '',
+  })
+
+  // Kept as its own query so the main page paints without waiting on the
+  // strip below the fold.
+  const { data: related = [], isPending: relatedPending } = useQuery({
+    queryKey: queryKeys.related(slug),
+    queryFn: () => fetchRelated(slug),
+    enabled: Boolean(product),
+  })
+
+  if (isPending) return <ProductDetailSkeleton />
+
+  if (isError) {
+    return (
+      <div className="mx-auto max-w-2xl px-4 py-20">
+        <QueryError onRetry={() => void refetch()} />
+      </div>
+    )
   }
 
   if (!product) {
@@ -68,7 +93,6 @@ function ProductDetailPage() {
     )
   }
 
-  const related = relatedTo(product)
 
   const handleAdd = () => {
     add(product.id, qty)
@@ -159,12 +183,16 @@ function ProductDetailPage() {
         </div>
       </div>
 
-      {related.length > 0 && (
+      {(relatedPending || related.length > 0) && (
         <section className="mt-20">
           <h2 className="mb-6 text-2xl">
             More {categoryLabels[product.category].toLowerCase()}
           </h2>
-          <ProductGrid products={related} />
+          {relatedPending ? (
+            <ProductGridSkeleton count={3} />
+          ) : (
+            <ProductGrid products={related} />
+          )}
         </section>
       )}
     </div>

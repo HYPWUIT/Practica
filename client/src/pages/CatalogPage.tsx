@@ -1,18 +1,20 @@
+import { keepPreviousData, useQuery } from '@tanstack/react-query'
 import { useMemo, useState } from 'react'
 import { Link, useSearchParams } from 'react-router'
+import { fetchCatalog, queryKeys } from '../api/catalog'
 import FilterSidebar from '../components/FilterSidebar'
 import ProductGrid from '../components/ProductGrid'
+import QueryError from '../components/QueryError'
+import ProductGridSkeleton from '../components/skeletons/ProductGridSkeleton'
 import SearchBar from '../components/SearchBar'
 import Button from '../components/ui/Button'
 import EmptyState from '../components/ui/EmptyState'
 import Sheet from '../components/ui/Sheet'
 import { buttonClasses } from '../components/ui/button-styles'
-import { products } from '../data/products'
 import type { Criteria } from '../lib/filter'
 import {
   activeFilterCount,
   criteriaToParams,
-  filterProducts,
   parseCriteria,
   sortOptions,
 } from '../lib/filter'
@@ -39,10 +41,19 @@ function CatalogPage({
     [searchParams],
   )
 
-  const results = useMemo(
-    () => filterProducts(products, criteria, { bestsellersOnly }),
-    [criteria, bestsellersOnly],
-  )
+  const {
+    data: results = [],
+    isPending,
+    isError,
+    refetch,
+    // True while a *new* filter combination loads and the previous results are
+    // still on screen — dimming them beats flashing skeletons on every click.
+    isPlaceholderData,
+  } = useQuery({
+    queryKey: queryKeys.catalog(criteria, bestsellersOnly),
+    queryFn: () => fetchCatalog(criteria, { bestsellersOnly }),
+    placeholderData: keepPreviousData,
+  })
 
   const update = (patch: Partial<Criteria>) => {
     // `replace` so dragging the price slider does not fill the back button.
@@ -124,17 +135,36 @@ function CatalogPage({
           </div>
 
           <p aria-live="polite" className="mb-5 text-sm text-muted">
-            {results.length} {results.length === 1 ? 'product' : 'products'}
-            {criteria.q && (
+            {isPending ? (
+              'Loading products…'
+            ) : (
               <>
-                {' '}
-                for <span className="text-ink">“{criteria.q}”</span>
+                {results.length}{' '}
+                {results.length === 1 ? 'product' : 'products'}
+                {criteria.q && (
+                  <>
+                    {' '}
+                    for <span className="text-ink">“{criteria.q}”</span>
+                  </>
+                )}
               </>
             )}
           </p>
 
-          {results.length > 0 ? (
-            <ProductGrid products={results} />
+          {isPending ? (
+            <ProductGridSkeleton />
+          ) : isError ? (
+            <QueryError
+              title="The catalogue did not load"
+              onRetry={() => void refetch()}
+            />
+          ) : results.length > 0 ? (
+            <ProductGrid
+              products={results}
+              className={
+                isPlaceholderData ? 'opacity-50 transition-opacity' : ''
+              }
+            />
           ) : (
             <EmptyState
               title="Nothing matches that"

@@ -1,17 +1,27 @@
 import { zodResolver } from '@hookform/resolvers/zod'
+import { useQuery } from '@tanstack/react-query'
 import { useRef, useState } from 'react'
 import { useForm } from 'react-hook-form'
+import { fetchJobs, queryKeys } from '../api/catalog'
+import QueryError from '../components/QueryError'
+import JobListSkeleton from '../components/skeletons/JobListSkeleton'
 import Badge from '../components/ui/Badge'
 import Button from '../components/ui/Button'
 import Input from '../components/ui/Input'
 import Select from '../components/ui/Select'
 import Textarea from '../components/ui/Textarea'
-import { jobs } from '../data/jobs'
 import { applicationSchema } from '../lib/schemas'
 
 function CareerPage() {
   const [applied, setApplied] = useState<string | null>(null)
   const formRef = useRef<HTMLDivElement>(null)
+
+  const {
+    data: jobs = [],
+    isPending,
+    isError,
+    refetch,
+  } = useQuery({ queryKey: queryKeys.jobs(), queryFn: fetchJobs })
 
   const {
     register,
@@ -58,6 +68,16 @@ function CareerPage() {
 
       <section className="mt-12">
         <h2 className="text-2xl">Open positions</h2>
+
+        {isPending ? (
+          <JobListSkeleton />
+        ) : isError ? (
+          <QueryError
+            title="The positions did not load"
+            className="mt-6"
+            onRetry={() => void refetch()}
+          />
+        ) : (
         <ul className="mt-6 space-y-4">
           {jobs.map((job) => (
             <li
@@ -87,6 +107,7 @@ function CareerPage() {
             </li>
           ))}
         </ul>
+        )}
       </section>
 
       <section ref={formRef} className="mt-16 scroll-mt-24">
