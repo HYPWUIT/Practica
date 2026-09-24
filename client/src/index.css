@@ -1,0 +1,51 @@
+@import 'tailwindcss';
+
+/* Sage & Oak design tokens.
+   Nothing outside this block should hardcode a colour. */
+@theme {
+  --color-sage-50: #f3f7f4;
+  --color-sage-100: #e2ece5;
+  --color-sage-200: #c4d9ca;
+  --color-sage-300: #99bfa4;
+  --color-sage-400: #6aa07b;
+  --color-sage-500: #47825b;
+  --color-sage-600: #356848;
+  --color-sage-700: #2b533a;
+  --color-sage-800: #244331;
+  --color-sage-900: #1e372a;
+
+  /* Neutrals: warm off-whites so the greens read natural, not clinical. */
+  --color-canvas: #ffffff;
+  --color-shell: #faf9f5;
+  --color-ink: #1b201c;
+  --color-muted: #6c7a6f;
+  --color-line: #e4e7e3;
+
+  /* System stacks only — the app must work offline, so no webfonts. */
+  --font-display: ui-serif, Georgia, 'Times New Roman', serif;
+  --font-sans: ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto,
+    sans-serif;
+}
+
+@layer base {
+  body {
+    background-color: var(--color-canvas);
+    color: var(--color-ink);
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+  }
+
+  h1,
+  h2,
+  h3 {
+    font-family: var(--font-display);
+    font-weight: 400;
+    letter-spacing: -0.01em;
+  }
+
+  /* Keyboard focus stays visible everywhere; Phase 8 refines per-component. */
+  :focus-visible {
+    outline: 2px solid var(--color-sage-500);
+    outline-offset: 2px;
+  }
+}
