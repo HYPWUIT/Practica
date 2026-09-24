@@ -34,7 +34,7 @@ function Modal({ open, onClose, title, children, footer }: ModalProps) {
         // The dialog element itself is the backdrop; its children are not.
         if (event.target === dialogRef.current) onClose()
       }}
-      className="m-auto w-[min(32rem,calc(100vw-2rem))] rounded-xl border border-line bg-canvas p-0 text-ink backdrop:bg-ink/40"
+      className="m-auto w-[min(32rem,calc(100vw-2rem))] rounded-xl border border-line bg-canvas p-0 text-ink backdrop:bg-scrim/60"
     >
       <div className="flex items-start justify-between gap-4 border-b border-line px-5 py-4">
         <h2 id="modal-title" className="text-lg">

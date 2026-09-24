@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { Link, NavLink, useLocation } from 'react-router'
 import { useCart } from '../hooks/useCart'
 import Logo from './Logo'
+import ThemeToggle from './ThemeToggle'
 import Sheet from './ui/Sheet'
 
 const links = [
@@ -47,7 +48,9 @@ function Navbar() {
           ))}
         </ul>
 
-        <div className="ml-auto flex shrink-0 items-center gap-2 text-sm sm:gap-4 lg:ml-0">
+        <div className="ml-auto flex shrink-0 items-center gap-2 text-sm sm:gap-3 lg:ml-0">
+          <ThemeToggle className="-mr-1" />
+
           <Link
             to="/login"
             className="hidden text-muted hover:text-sage-600 sm:inline"

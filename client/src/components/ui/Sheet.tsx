@@ -31,7 +31,7 @@ function Sheet({ open, onClose, title, children }: SheetProps) {
       onClick={(event) => {
         if (event.target === dialogRef.current) onClose()
       }}
-      className="m-0 ml-auto h-dvh max-h-none w-[min(20rem,85vw)] max-w-none bg-canvas p-0 text-ink backdrop:bg-ink/40"
+      className="m-0 ml-auto h-dvh max-h-none w-[min(20rem,85vw)] max-w-none bg-canvas p-0 text-ink backdrop:bg-scrim/60"
     >
       <div className="flex h-full flex-col">
         <div className="flex items-center justify-between border-b border-line px-4 py-3">

@@ -22,6 +22,9 @@
   --color-ink: #1b201c;
   --color-muted: #6c7a6f;
   --color-line: #e4e7e3;
+  /* Dialog backdrops. Its own token because `ink` flips to near-white in
+     dark mode, and a bright haze over the page is not a backdrop. */
+  --color-scrim: #1b201c;
 
   /* System stacks only — the app must work offline, so no webfonts. */
   --font-display: ui-serif, Georgia, 'Times New Roman', serif;
@@ -29,7 +32,62 @@
     sans-serif;
 }
 
+/**
+ * Night mode.
+ *
+ * Every colour in the app resolves through the tokens above, so the dark
+ * theme is this one block rather than a `dark:` variant on several hundred
+ * class names. ThemeProvider resolves "system" to a concrete value and stamps
+ * data-theme on <html>, which is why only one selector is needed here.
+ */
 @layer base {
+  :root {
+    color-scheme: light;
+  }
+
+  [data-theme='dark'] {
+    /* Native controls — scrollbars, select menus, date pickers — follow this. */
+    color-scheme: dark;
+
+    --color-canvas: #131714;
+    --color-shell: #1a1f1b;
+    /* `mist` deliberately does NOT invert. It backs the product silhouettes,
+       which stand in for photography, and photographs do not flip with the
+       theme. Inverted, the ink and charcoal pieces disappeared into it — the
+       same failure as pale products on a pale panel, upside down. Dimmed a
+       little from the light value so it does not glare against the dark page. */
+    --color-mist: #e7e3d7;
+    --color-ink: #e6ebe6;
+    --color-muted: #97a69b;
+    --color-line: #2c332e;
+    --color-scrim: #000000;
+
+    /* The sage ramp runs the other way in the dark: what was the palest tint
+       becomes the deepest surface, and the deep greens become the legible
+       foregrounds. Every existing sage-N class then lands correctly without
+       being touched — `bg-sage-600 text-canvas` is a pale green button with
+       near-black text, and `text-sage-700` stays a readable link. */
+    --color-sage-50: #17241b;
+    --color-sage-100: #1d2f23;
+    --color-sage-200: #27412f;
+    --color-sage-300: #35583f;
+    --color-sage-400: #4a7a59;
+    --color-sage-500: #6aa07b;
+    --color-sage-600: #7fbc92;
+    --color-sage-700: #9ad0aa;
+    --color-sage-800: #bde3c8;
+    --color-sage-900: #dcefe2;
+
+    /* The handful of places that reach past our tokens into Tailwind's own
+       palette: validation errors and the low-stock badge. Dark-on-light by
+       default, so they need flipping too. */
+    --color-red-50: #2a1614;
+    --color-red-500: #d9635c;
+    --color-red-700: #ff9d96;
+    --color-amber-100: #3a2c10;
+    --color-amber-900: #f0d08a;
+  }
+
   body {
     background-color: var(--color-canvas);
     color: var(--color-ink);
