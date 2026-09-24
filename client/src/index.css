@@ -17,6 +17,8 @@
   /* Neutrals: warm off-whites so the greens read natural, not clinical. */
   --color-canvas: #ffffff;
   --color-shell: #faf9f5;
+  /* Deeper than shell so pale products stay visible against their tile. */
+  --color-mist: #efece3;
   --color-ink: #1b201c;
   --color-muted: #6c7a6f;
   --color-line: #e4e7e3;
