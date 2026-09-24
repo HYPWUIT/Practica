@@ -17,6 +17,7 @@ import { checkoutSchema, checkoutStepFields } from '../lib/schemas'
 import { formatCardNumber, formatExpiry } from '../lib/validators'
 
 const countries = [
+  { value: 'md', label: 'Moldova' },
   { value: 'ro', label: 'Romania' },
   { value: 'gb', label: 'United Kingdom' },
   { value: 'us', label: 'United States' },
