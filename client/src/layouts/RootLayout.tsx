@@ -1,6 +1,7 @@
 import { Outlet, ScrollRestoration } from 'react-router'
 import Footer from '../components/Footer'
 import Navbar from '../components/Navbar'
+import Toaster from '../components/Toaster'
 
 function RootLayout() {
   return (
@@ -10,6 +11,7 @@ function RootLayout() {
         <Outlet />
       </main>
       <Footer />
+      <Toaster />
       <ScrollRestoration />
     </div>
   )
