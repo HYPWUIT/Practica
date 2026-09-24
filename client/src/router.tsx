@@ -1,17 +1,19 @@
+import type { ComponentType } from 'react'
 import { createBrowserRouter } from 'react-router'
 import RootLayout from './layouts/RootLayout'
-import AboutPage from './pages/AboutPage'
-import BestSalesPage from './pages/BestSalesPage'
-import CareerPage from './pages/CareerPage'
-import CartPage from './pages/CartPage'
-import CatalogPage from './pages/CatalogPage'
-import CheckoutPage from './pages/CheckoutPage'
-import ContactPage from './pages/ContactPage'
 import HomePage from './pages/HomePage'
-import LoginPage from './pages/LoginPage'
-import NotFoundPage from './pages/NotFoundPage'
-import ProductDetailPage from './pages/ProductDetailPage'
-import SignupPage from './pages/SignupPage'
+
+/**
+ * Every route but the landing page is code-split, which keeps the first load
+ * to the shell plus Home rather than the whole shop.
+ *
+ * `lazy` expects a module exposing `Component`; our pages use a default
+ * export, hence the small adapter on each line.
+ */
+const page =
+  (load: () => Promise<{ default: ComponentType }>) => async () => ({
+    Component: (await load()).default,
+  })
 
 /**
  * Checkout is deliberately not guarded: auth is validation-only for now, so
@@ -23,17 +25,20 @@ const router = createBrowserRouter([
     Component: RootLayout,
     children: [
       { index: true, Component: HomePage },
-      { path: 'catalog', Component: CatalogPage },
-      { path: 'product/:slug', Component: ProductDetailPage },
-      { path: 'cart', Component: CartPage },
-      { path: 'checkout', Component: CheckoutPage },
-      { path: 'best-sales', Component: BestSalesPage },
-      { path: 'about', Component: AboutPage },
-      { path: 'career', Component: CareerPage },
-      { path: 'contact', Component: ContactPage },
-      { path: 'login', Component: LoginPage },
-      { path: 'signup', Component: SignupPage },
-      { path: '*', Component: NotFoundPage },
+      { path: 'catalog', lazy: page(() => import('./pages/CatalogPage')) },
+      {
+        path: 'product/:slug',
+        lazy: page(() => import('./pages/ProductDetailPage')),
+      },
+      { path: 'cart', lazy: page(() => import('./pages/CartPage')) },
+      { path: 'checkout', lazy: page(() => import('./pages/CheckoutPage')) },
+      { path: 'best-sales', lazy: page(() => import('./pages/BestSalesPage')) },
+      { path: 'about', lazy: page(() => import('./pages/AboutPage')) },
+      { path: 'career', lazy: page(() => import('./pages/CareerPage')) },
+      { path: 'contact', lazy: page(() => import('./pages/ContactPage')) },
+      { path: 'login', lazy: page(() => import('./pages/LoginPage')) },
+      { path: 'signup', lazy: page(() => import('./pages/SignupPage')) },
+      { path: '*', lazy: page(() => import('./pages/NotFoundPage')) },
     ],
   },
 ])

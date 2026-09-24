@@ -16,6 +16,8 @@ type FilterSidebarProps = {
   criteria: Criteria
   onChange: (patch: Partial<Criteria>) => void
   onClear: () => void
+  /** The drawer already has a "Filters" header; do not print a second one. */
+  hideHeading?: boolean
 }
 
 /** Adds or removes one value from a facet's selection. */
@@ -42,23 +44,34 @@ function Section({
   )
 }
 
-function FilterSidebar({ criteria, onChange, onClear }: FilterSidebarProps) {
+function FilterSidebar({
+  criteria,
+  onChange,
+  onClear,
+  hideHeading = false,
+}: FilterSidebarProps) {
   const active = activeFilterCount(criteria)
 
   return (
     <aside aria-label="Filters">
-      <div className="flex items-center justify-between pb-4">
-        <h2 className="text-lg">Filters</h2>
-        {active > 0 && (
-          <button
-            type="button"
-            onClick={onClear}
-            className="text-xs text-sage-700 hover:underline"
-          >
-            Clear all ({active})
-          </button>
-        )}
-      </div>
+      {(!hideHeading || active > 0) && (
+        <div
+          className={`flex items-center pb-4 ${
+            hideHeading ? 'justify-end' : 'justify-between'
+          }`}
+        >
+          {!hideHeading && <h2 className="text-lg">Filters</h2>}
+          {active > 0 && (
+            <button
+              type="button"
+              onClick={onClear}
+              className="text-xs text-sage-700 hover:underline"
+            >
+              Clear all ({active})
+            </button>
+          )}
+        </div>
+      )}
 
       <Section title="Category">
         <div className="space-y-2.5">

@@ -1,10 +1,11 @@
-import { useMemo } from 'react'
+import { useMemo, useState } from 'react'
 import { Link, useSearchParams } from 'react-router'
 import FilterSidebar from '../components/FilterSidebar'
 import ProductGrid from '../components/ProductGrid'
 import SearchBar from '../components/SearchBar'
 import Button from '../components/ui/Button'
 import EmptyState from '../components/ui/EmptyState'
+import Sheet from '../components/ui/Sheet'
 import { buttonClasses } from '../components/ui/button-styles'
 import { products } from '../data/products'
 import type { Criteria } from '../lib/filter'
@@ -29,6 +30,7 @@ function CatalogPage({
   subtitle = 'Everything we make, and a few things we only make sometimes.',
 }: CatalogPageProps) {
   const [searchParams, setSearchParams] = useSearchParams()
+  const [filtersOpen, setFiltersOpen] = useState(false)
 
   // The URL is the state. Nothing is mirrored into component state, so a
   // pasted link and a clicked filter land in exactly the same place.
@@ -65,12 +67,16 @@ function CatalogPage({
           bestsellersOnly ? '' : 'grid gap-10 lg:grid-cols-[16rem_1fr]'
         }
       >
+        {/* Below lg the sidebar would push the products off the screen, so it
+            moves into a drawer instead. */}
         {!bestsellersOnly && (
-          <FilterSidebar
-            criteria={criteria}
-            onChange={update}
-            onClear={clear}
-          />
+          <div className="hidden lg:block">
+            <FilterSidebar
+              criteria={criteria}
+              onChange={update}
+              onClear={clear}
+            />
+          </div>
         )}
 
         <div>
@@ -83,9 +89,25 @@ function CatalogPage({
               />
             </div>
 
+            {!bestsellersOnly && (
+              <Button
+                variant="secondary"
+                onClick={() => setFiltersOpen(true)}
+                className="lg:hidden"
+              >
+                Filters
+                {activeFilterCount(criteria) > 0 && (
+                  <span className="rounded-full bg-sage-600 px-1.5 text-xs text-canvas">
+                    {activeFilterCount(criteria)}
+                  </span>
+                )}
+              </Button>
+            )}
+
             <label className="flex items-center gap-2 text-sm text-muted">
               Sort
               <select
+                aria-label="Sort products"
                 value={criteria.sort}
                 onChange={(event) =>
                   update({ sort: event.target.value as Criteria['sort'] })
@@ -136,6 +158,29 @@ function CatalogPage({
           )}
         </div>
       </div>
+
+      {!bestsellersOnly && (
+        <Sheet
+          open={filtersOpen}
+          onClose={() => setFiltersOpen(false)}
+          title="Filters"
+        >
+          <FilterSidebar
+            hideHeading
+            criteria={criteria}
+            onChange={update}
+            onClear={clear}
+          />
+          <Button
+            fullWidth
+            className="mt-6"
+            onClick={() => setFiltersOpen(false)}
+          >
+            Show {results.length}{' '}
+            {results.length === 1 ? 'product' : 'products'}
+          </Button>
+        </Sheet>
+      )}
     </div>
   )
 }
