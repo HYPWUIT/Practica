@@ -27,6 +27,7 @@ needed.
 - Tailwind CSS for styling
 - React Router for pages
 - React Context + `useReducer` for cart and auth state
+- React Hook Form + Zod for every form (contact, career, auth, checkout)
 
 No persistence layer: state lives in memory only, so a page refresh clears the
 cart. This is intentional until a backend exists.
