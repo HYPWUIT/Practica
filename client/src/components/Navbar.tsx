@@ -1,4 +1,5 @@
 import { Link, NavLink } from 'react-router'
+import { useCart } from '../hooks/useCart'
 import Logo from './Logo'
 
 const links = [
@@ -11,6 +12,8 @@ const links = [
 ]
 
 function Navbar() {
+  const { count } = useCart()
+
   return (
     <header className="sticky top-0 z-20 border-b border-line bg-canvas/90 backdrop-blur">
       <nav className="mx-auto flex h-16 max-w-6xl items-center gap-6 px-4">
@@ -43,9 +46,15 @@ function Navbar() {
           </Link>
           <Link
             to="/cart"
-            className="rounded-full bg-sage-600 px-4 py-2 text-canvas transition-colors hover:bg-sage-700"
+            className="flex items-center gap-2 rounded-full bg-sage-600 px-4 py-2 text-canvas transition-colors hover:bg-sage-700"
+            aria-label={`Cart, ${count} ${count === 1 ? 'item' : 'items'}`}
           >
             Cart
+            {count > 0 && (
+              <span className="min-w-5 rounded-full bg-canvas/25 px-1.5 text-center text-xs leading-5">
+                {count}
+              </span>
+            )}
           </Link>
         </div>
       </nav>
