@@ -1,11 +1,12 @@
-import PagePlaceholder from '../components/PagePlaceholder'
+import CatalogPage from './CatalogPage'
 
+/** The catalogue preset to bestsellers, with the filter sidebar hidden. */
 function BestSalesPage() {
   return (
-    <PagePlaceholder
+    <CatalogPage
+      bestsellersOnly
       title="Best sales"
-      phase="Phase 7"
-      description="The catalog grid preset to bestsellers, with the filter sidebar hidden."
+      subtitle="The pieces that leave the workshop fastest."
     />
   )
 }
