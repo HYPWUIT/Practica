@@ -12,6 +12,12 @@ const envSchema = z.object({
   DATABASE_URL: z
     .string()
     .regex(/^postgres(ql)?:\/\//, 'Must be a postgresql:// connection string'),
+  /** Signs session cookies. Generate with `bunx auth secret`. */
+  BETTER_AUTH_SECRET: z.string().min(32, 'Must be at least 32 characters'),
+  /** Where this server is reached, e.g. http://localhost:3000. */
+  BETTER_AUTH_URL: z.url(),
+  /** The web app's origin; auth requests from anywhere else are refused. */
+  CLIENT_ORIGIN: z.url().default('http://localhost:5173'),
 })
 
 const parsed = envSchema.safeParse(process.env)
