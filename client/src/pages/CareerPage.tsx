@@ -10,7 +10,7 @@ import Button from '../components/ui/Button'
 import Input from '../components/ui/Input'
 import Select from '../components/ui/Select'
 import Textarea from '../components/ui/Textarea'
-import { applicationSchema } from '../lib/schemas'
+import { applicationSchema } from '@sage-oak/shared'
 
 function CareerPage() {
   const [applied, setApplied] = useState<string | null>(null)

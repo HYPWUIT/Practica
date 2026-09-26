@@ -7,10 +7,12 @@
     "dev": "vite",
     "build": "tsc -b && vite build",
     "lint": "oxlint",
+    "typecheck": "tsc -b",
     "preview": "vite preview"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.9.1",
+    "@sage-oak/shared": "workspace:*",
     "@tanstack/react-query": "^5.103.2",
     "react": "^19.2.8",
     "react-dom": "^19.2.8",

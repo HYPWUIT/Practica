@@ -12,8 +12,8 @@ import Select from '../components/ui/Select'
 import { buttonClasses } from '../components/ui/button-styles'
 import { useCart } from '../hooks/useCart'
 import { formatPrice } from '../lib/format'
-import type { CheckoutValues } from '../lib/schemas'
-import { checkoutSchema, checkoutStepFields } from '../lib/schemas'
+import type { CheckoutValues } from '@sage-oak/shared'
+import { checkoutSchema, checkoutStepFields } from '@sage-oak/shared'
 import { formatCardNumber, formatExpiry } from '../lib/validators'
 
 const countries = [

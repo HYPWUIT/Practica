@@ -1,6 +1,6 @@
 import type { JSX } from 'react'
 import { colorSwatches } from '../data/taxonomy'
-import type { Category, ColorName } from '../types/product'
+import type { Category, ColorName } from '@sage-oak/shared'
 
 /**
  * Six category silhouettes standing in for photography.

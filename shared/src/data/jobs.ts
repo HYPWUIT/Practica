@@ -1,11 +1,4 @@
-export type Job = {
-  id: string
-  title: string
-  team: string
-  location: string
-  type: 'Full-time' | 'Part-time' | 'Apprenticeship'
-  summary: string
-}
+import type { Job } from '../job'
 
 export const jobs: Job[] = [
   {

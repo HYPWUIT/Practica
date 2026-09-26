@@ -8,7 +8,7 @@ import {
 import { colorSwatches, lightSwatches } from '../data/taxonomy'
 import type { Criteria } from '../lib/filter'
 import { activeFilterCount } from '../lib/filter'
-import type { Category, ColorName, Material } from '../types/product'
+import type { Category, ColorName, Material } from '@sage-oak/shared'
 import Checkbox from './ui/Checkbox'
 import PriceRange from './ui/PriceRange'
 

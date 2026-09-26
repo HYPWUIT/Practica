@@ -1,0 +1,11 @@
+{
+  "name": "sage-and-oak",
+  "private": true,
+  "workspaces": ["client", "shared"],
+  "scripts": {
+    "dev:client": "bun run --cwd client dev",
+    "lint": "bun run --filter '*' lint",
+    "typecheck": "bun run --filter '*' typecheck",
+    "test": "bun run --filter '*' test"
+  }
+}

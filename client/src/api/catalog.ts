@@ -1,9 +1,7 @@
-import { jobs } from '../data/jobs'
-import type { Job } from '../data/jobs'
-import { getProductBySlug, products } from '../data/products'
+import type { Job, Product } from '@sage-oak/shared'
+import { getProductBySlug, jobs, products } from '@sage-oak/shared/data'
 import type { Criteria } from '../lib/filter'
 import { filterProducts } from '../lib/filter'
-import type { Product } from '../types/product'
 
 /**
  * A stand-in for the API this shop does not have yet.

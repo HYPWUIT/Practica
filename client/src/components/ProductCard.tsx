@@ -1,7 +1,7 @@
 import { Link } from 'react-router'
 import { useCart } from '../hooks/useCart'
 import { categoryLabels, materialLabels } from '../data/taxonomy'
-import type { Product } from '../types/product'
+import type { Product } from '@sage-oak/shared'
 import ProductArt from './ProductArt'
 import Badge from './ui/Badge'
 import Button from './ui/Button'

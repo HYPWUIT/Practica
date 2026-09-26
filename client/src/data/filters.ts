@@ -4,8 +4,8 @@ import type {
   FacetOption,
   Material,
   Product,
-} from '../types/product'
-import { products } from './products'
+} from '@sage-oak/shared'
+import { products } from '@sage-oak/shared/data'
 import {
   categoryLabels,
   categoryOrder,

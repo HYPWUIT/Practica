@@ -1,4 +1,4 @@
-import type { Product } from '../types/product'
+import type { Product } from '@sage-oak/shared'
 import ProductCard from './ProductCard'
 
 type ProductGridProps = {

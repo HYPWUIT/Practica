@@ -5,7 +5,7 @@ import AuthCard from '../components/AuthCard'
 import Button from '../components/ui/Button'
 import Input from '../components/ui/Input'
 import { useAuth } from '../hooks/useAuth'
-import { loginSchema } from '../lib/schemas'
+import { loginSchema } from '@sage-oak/shared'
 
 function LoginPage() {
   const auth = useAuth()

@@ -1,5 +1,5 @@
 import { createContext } from 'react'
-import type { Product } from '../types/product'
+import type { Product } from '@sage-oak/shared'
 
 /**
  * Context object and types only — no components, so the provider file stays

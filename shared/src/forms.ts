@@ -16,16 +16,24 @@ export const loginSchema = z.object({
   password: z.string().min(8, 'Password must be at least 8 characters'),
 })
 
+/**
+ * New-password rules. The server runs sign-ups through this too, so an
+ * account cannot be created with a password the form would have refused.
+ * 128 matches Better Auth's own upper limit.
+ */
+export const passwordSchema = z
+  .string()
+  .min(8, 'Password must be at least 8 characters')
+  .max(128, 'Password must be at most 128 characters')
+  .regex(/[a-z]/, 'Include at least one lowercase letter')
+  .regex(/[A-Z]/, 'Include at least one uppercase letter')
+  .regex(/\d/, 'Include at least one number')
+
 export const signupSchema = z
   .object({
     name: requiredText('Name'),
     email: z.email('Enter a valid email address'),
-    password: z
-      .string()
-      .min(8, 'Password must be at least 8 characters')
-      .regex(/[a-z]/, 'Include at least one lowercase letter')
-      .regex(/[A-Z]/, 'Include at least one uppercase letter')
-      .regex(/\d/, 'Include at least one number'),
+    password: passwordSchema,
     confirmPassword: z.string(),
   })
   .refine((data) => data.password === data.confirmPassword, {

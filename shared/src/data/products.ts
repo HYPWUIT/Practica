@@ -1,8 +1,11 @@
-import type { Product } from '../types/product'
+import type { Product } from '../product'
 
 /**
  * The whole catalogue. Four products per category so every filter has
  * something to bite on and no facet ever comes back empty on its own.
+ *
+ * This is the server's seed data, and the client's mock API still reads it
+ * directly until the client is switched over to the real endpoints.
  *
  * Prices are cents. Dimensions are centimetres.
  */

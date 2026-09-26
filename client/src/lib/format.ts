@@ -1,4 +1,4 @@
-import type { Dimensions } from '../types/product'
+import type { Dimensions } from '@sage-oak/shared'
 
 const priceFormatter = new Intl.NumberFormat('en-US', {
   style: 'currency',

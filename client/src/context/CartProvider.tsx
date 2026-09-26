@@ -1,6 +1,6 @@
 import type { ReactNode } from 'react'
 import { useMemo, useReducer } from 'react'
-import { products } from '../data/products'
+import { products } from '@sage-oak/shared/data'
 import type { CartContextValue, CartItem, CartLine } from './cart-context'
 import { CartContext, MAX_QTY } from './cart-context'
 

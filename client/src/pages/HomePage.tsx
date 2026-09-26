@@ -11,7 +11,7 @@ import Input from '../components/ui/Input'
 import { buttonClasses } from '../components/ui/button-styles'
 import { categoryOptions } from '../data/filters'
 import { useToast } from '../hooks/useToast'
-import { newsletterSchema } from '../lib/schemas'
+import { newsletterSchema } from '@sage-oak/shared'
 
 /** Representative product per category, for the tile artwork. */
 const tileColors = {

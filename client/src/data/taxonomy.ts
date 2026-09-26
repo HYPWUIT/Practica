@@ -1,4 +1,4 @@
-import type { Category, ColorName, Material } from '../types/product'
+import type { Category, ColorName, Material } from '@sage-oak/shared'
 
 /**
  * Display names and swatch values for the catalogue's vocabulary.

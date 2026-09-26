@@ -1,6 +1,12 @@
 import { priceBounds } from '../data/filters'
 import { categoryLabels, colorLabels, materialLabels } from '../data/taxonomy'
-import type { Category, ColorName, Material, Product } from '../types/product'
+import type {
+  Category,
+  ColorName,
+  Material,
+  Product,
+  SortKey,
+} from '@sage-oak/shared'
 
 /**
  * Pure catalogue logic — no React, no hooks. Everything here is a function of
@@ -8,7 +14,7 @@ import type { Category, ColorName, Material, Product } from '../types/product'
  * URL the single source of truth in the page.
  */
 
-export type SortKey = 'featured' | 'price-asc' | 'price-desc' | 'name'
+export type { SortKey }
 
 export const sortOptions: { value: SortKey; label: string }[] = [
   { value: 'featured', label: 'Featured' },

@@ -1,0 +1,21 @@
+{
+  "name": "@sage-oak/shared",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts",
+    "./data": "./src/data/index.ts"
+  },
+  "scripts": {
+    "lint": "oxlint",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "zod": "^4.6.5"
+  },
+  "devDependencies": {
+    "oxlint": "^1.81.0",
+    "typescript": "~6.0.2"
+  }
+}
