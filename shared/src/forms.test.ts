@@ -1,5 +1,5 @@
 import { describe, expect, test } from 'bun:test'
-import { passwordSchema, signupSchema } from './forms'
+import { changePasswordSchema, passwordSchema, profileSchema, signupSchema } from './forms'
 
 const messageFor = (password: string) =>
   passwordSchema.safeParse(password).error?.issues[0]?.message
@@ -38,5 +38,42 @@ describe('signupSchema', () => {
   test('reports a mismatched confirmation on confirmPassword', () => {
     const result = signupSchema.safeParse({ ...valid, confirmPassword: 'Robin54321' })
     expect(result.error?.issues[0]?.path).toEqual(['confirmPassword'])
+  })
+})
+
+describe('profileSchema', () => {
+  test('trims the name and requires at least 2 characters', () => {
+    expect(profileSchema.parse({ name: '  Ana  ' }).name).toBe('Ana')
+    expect(profileSchema.safeParse({ name: ' A ' }).success).toBe(false)
+    expect(profileSchema.safeParse({ name: 'x'.repeat(81) }).success).toBe(false)
+  })
+})
+
+describe('changePasswordSchema', () => {
+  const valid = {
+    currentPassword: 'Robin12345',
+    newPassword: 'Oakwood2026',
+    confirmPassword: 'Oakwood2026',
+    revokeOtherSessions: true,
+  }
+  const pathsFor = (patch: object) =>
+    changePasswordSchema.safeParse({ ...valid, ...patch }).error?.issues.map((i) => i.path[0])
+
+  test('accepts a valid change', () => {
+    expect(changePasswordSchema.safeParse(valid).success).toBe(true)
+  })
+
+  test('applies the new-password rules', () => {
+    expect(pathsFor({ newPassword: 'weak', confirmPassword: 'weak' })).toContain('newPassword')
+  })
+
+  test('requires a matching confirmation', () => {
+    expect(pathsFor({ confirmPassword: 'Oakwood2027' })).toEqual(['confirmPassword'])
+  })
+
+  test('refuses reusing the current password', () => {
+    expect(
+      pathsFor({ newPassword: 'Robin12345', confirmPassword: 'Robin12345' }),
+    ).toEqual(['newPassword'])
   })
 })

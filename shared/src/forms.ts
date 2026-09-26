@@ -29,9 +29,12 @@ export const passwordSchema = z
   .regex(/[A-Z]/, 'Include at least one uppercase letter')
   .regex(/\d/, 'Include at least one number')
 
+/** Display name. Also checked by the server on profile updates. */
+export const nameSchema = requiredText('Name').max(80, 'Keep it under 80 characters')
+
 export const signupSchema = z
   .object({
-    name: requiredText('Name'),
+    name: nameSchema,
     email: z.email('Enter a valid email address'),
     password: passwordSchema,
     confirmPassword: z.string(),
@@ -39,6 +42,29 @@ export const signupSchema = z
   .refine((data) => data.password === data.confirmPassword, {
     message: 'Passwords do not match',
     path: ['confirmPassword'],
+  })
+
+// ─── Account ────────────────────────────────────────────────────────────
+
+export const profileSchema = z.object({
+  name: nameSchema,
+})
+
+export const changePasswordSchema = z
+  .object({
+    currentPassword: z.string().min(1, 'Enter your current password'),
+    newPassword: passwordSchema,
+    confirmPassword: z.string(),
+    /** Sign out every other device once the password has changed. */
+    revokeOtherSessions: z.boolean(),
+  })
+  .refine((data) => data.newPassword === data.confirmPassword, {
+    message: 'Passwords do not match',
+    path: ['confirmPassword'],
+  })
+  .refine((data) => data.newPassword !== data.currentPassword, {
+    message: 'Choose a password different from the current one',
+    path: ['newPassword'],
   })
 
 // ─── Contact & careers ──────────────────────────────────────────────────
@@ -112,6 +138,8 @@ export const newsletterSchema = z.object({
 
 export type LoginValues = z.infer<typeof loginSchema>
 export type SignupValues = z.infer<typeof signupSchema>
+export type ProfileValues = z.infer<typeof profileSchema>
+export type ChangePasswordValues = z.infer<typeof changePasswordSchema>
 export type ContactValues = z.infer<typeof contactSchema>
 export type ApplicationValues = z.infer<typeof applicationSchema>
 export type ShippingValues = z.infer<typeof shippingSchema>

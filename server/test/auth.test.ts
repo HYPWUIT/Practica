@@ -98,3 +98,81 @@ describe('email and password auth', () => {
     expect(response.status).toBe(403)
   })
 })
+
+describe('account changes', () => {
+  const accountEmail = `account-test-${Date.now()}@example.com`
+  const newPassword = 'Oakwood2026'
+  let cookie = ''
+
+  afterAll(async () => {
+    await prisma.user.deleteMany({ where: { email: accountEmail } })
+  })
+
+  const post = (path: string, body: object, withCookie = cookie) =>
+    api(path, { method: 'POST', headers: { cookie: withCookie }, body: JSON.stringify(body) })
+
+  test('sign-up refuses a blank name', async () => {
+    const response = await signUp({ name: ' ', email: accountEmail, password })
+    expect(response.status).toBe(400)
+    expect(await response.json()).toMatchObject({ message: 'Name is required' })
+  })
+
+  test('set up: sign up', async () => {
+    const response = await signUp({ name: 'Before', email: accountEmail, password })
+    expect(response.status).toBe(200)
+    cookie = sessionCookie(response)
+  })
+
+  test('update-user changes the name, and refuses a blank one', async () => {
+    expect((await post('/auth/update-user', { name: 'After' })).status).toBe(200)
+    expect(await (await api('/me', { headers: { cookie } })).json()).toMatchObject({ name: 'After' })
+
+    const blank = await post('/auth/update-user', { name: '' })
+    expect(blank.status).toBe(400)
+    expect(await blank.json()).toMatchObject({ message: 'Name is required' })
+  })
+
+  test('update-user needs a session', async () => {
+    expect((await post('/auth/update-user', { name: 'Nobody' }, '')).status).toBe(401)
+  })
+
+  test('change-password applies the password rules to the new password', async () => {
+    const response = await post('/auth/change-password', {
+      currentPassword: password,
+      newPassword: 'alllowercase1',
+    })
+    expect(response.status).toBe(400)
+    expect(await response.json()).toMatchObject({
+      message: 'Include at least one uppercase letter',
+    })
+  })
+
+  test('change-password refuses a wrong current password', async () => {
+    const response = await post('/auth/change-password', {
+      currentPassword: 'Wrong12345',
+      newPassword,
+    })
+    expect(response.status).toBe(400)
+  })
+
+  test('change-password with revokeOtherSessions signs out other devices', async () => {
+    const other = sessionCookie(await signIn({ email: accountEmail, password }))
+    expect((await api('/me', { headers: { cookie: other } })).status).toBe(200)
+
+    const response = await post('/auth/change-password', {
+      currentPassword: password,
+      newPassword,
+      revokeOtherSessions: true,
+    })
+    expect(response.status).toBe(200)
+
+    expect((await api('/me', { headers: { cookie: other } })).status).toBe(401)
+    // The session that changed it is replaced by a fresh one in the response.
+    expect((await api('/me', { headers: { cookie: sessionCookie(response) } })).status).toBe(200)
+  })
+
+  test('afterwards only the new password signs in', async () => {
+    expect((await signIn({ email: accountEmail, password })).status).toBe(401)
+    expect((await signIn({ email: accountEmail, password: newPassword })).status).toBe(200)
+  })
+})
