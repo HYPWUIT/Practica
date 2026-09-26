@@ -9,6 +9,12 @@ export const auth = betterAuth({
   secret: env.BETTER_AUTH_SECRET,
   baseURL: env.BETTER_AUTH_URL,
   trustedOrigins: [env.CLIENT_ORIGIN],
+  advanced: {
+    // Better Auth skips the origin check whenever NODE_ENV is "test". Pinned
+    // on, so the tests exercise the real behaviour and a server started with
+    // the wrong NODE_ENV does not quietly accept any origin.
+    disableOriginCheck: false,
+  },
   database: prismaAdapter(prisma, { provider: 'postgresql' }),
   emailAndPassword: {
     enabled: true,

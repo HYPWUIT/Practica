@@ -8,6 +8,7 @@
     "start": "bun src/index.ts",
     "lint": "oxlint",
     "typecheck": "tsc --noEmit",
+    "test": "bun test",
     "db:generate": "bun --bun --env-file=.env prisma generate",
     "db:migrate": "bun --bun --env-file=.env prisma migrate dev",
     "db:seed": "bun --bun --env-file=.env prisma db seed",
