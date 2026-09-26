@@ -79,6 +79,16 @@ Din rădăcină:
 | `bun run dev:server` / `dev:client` | Pornește API-ul / site-ul |
 | `bun run typecheck` | Verifică tipurile în toate pachetele |
 | `bun run lint` | Rulează oxlint în toate pachetele |
+| `bun run test` | Teste unitare (`shared/`) și de integrare (`server/`) cu `bun test` |
+| `bun run test:e2e` | Teste Playwright în browser (prima dată: `cd e2e && bunx playwright install chromium`) |
+
+Testele rulează pe o bază separată, `sage_oak_test` (numele din `DATABASE_URL`
+plus `_test`), pe care o creează, o migrează și o populează singure — baza de
+development nu e atinsă. Testele Playwright pornesc propriul API și client pe
+porturile 3100 și 5174, deci merg și cu `dev:server` / `dev:client` pornite.
+
+GitHub Actions (`.github/workflows/ci.yml`) rulează la fiecare push: install,
+lint, typecheck, `test`, `test:e2e`, cu un PostgreSQL ca serviciu.
 
 Din `server/` (Prisma trebuie rulat prin aceste scripturi, nu cu `bunx prisma`
 direct — scripturile încarcă `.env`):
@@ -161,6 +171,7 @@ Practica/
 │       ├── middleware/      erori, sesiune
 │       └── routes/          products, jobs, me
 ├── shared/                  @sage-oak/shared — scheme Zod, tipuri, date
+├── e2e/                     teste Playwright
 ├── project-scope.md         cerințele proiectului
 ├── implementation-plan.md   planul (frontend + backend)
 ├── AI-LOG.md                jurnalul lucrului cu AI
@@ -174,4 +185,4 @@ TanStack Query 5 · React Hook Form 7.88
 
 **Server:** Bun 1.4 · Express 5.2 · Prisma 7.10 · PostgreSQL · Better Auth 1.7
 
-**Comun:** TypeScript 6 · Zod 4.6 · oxlint
+**Comun:** TypeScript 6 · Zod 4.6 · oxlint · `bun test` · Playwright 1.63

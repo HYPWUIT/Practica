@@ -273,20 +273,27 @@ with the form's message, duplicate email → 422, wrong password → 401,
 untrusted origin → 403. The catalogue still works and malformed JSON → 400.
 The password is stored hashed.
 
-## Step 7 — Tests and CI
+## Step 7 — Tests and CI ✅ `11d9323` `86f2091` `29febff` + CI
 
-- `bun test` in `shared/`: `catalogQuerySchema` (comma lists, coercion,
-  min > max, bad enum values) and `passwordSchema`.
-- `bun test` in `server/`: routes against a separate `sage_oak_test` database
-  (migrate + seed in a preload), turning the step-5 parity check into a
-  permanent test, plus the auth flow from step 6.
-- GitHub Actions: `oven-sh/setup-bun`, Postgres service container, then
-  `bun install` → lint → typecheck → test.
-- Browser tests (Playwright) for the auth flow, from the scratch script used
-  in C2.
+- **`shared/`** — 18 `bun test` unit tests: catalogue query parsing, password
+  rules and messages, sign-up confirmation, Luhn and expiry.
+- **`server/`** — 40 integration tests on the real app against
+  `sage_oak_test`, migrated and seeded by a preload that refuses any database
+  not ending in `_test`. The catalogue endpoint is checked against the
+  client's `filterProducts` for 19 queries; auth covers the whole flow.
+- **`e2e/`** — 8 Playwright tests. The config starts its own API (3100) and
+  client (5174) on the test database, so a dev session is never touched.
+- **CI** — GitHub Actions with a PostgreSQL service: install
+  (`--frozen-lockfile`), lint, typecheck, `test`, `test:e2e`; the Playwright
+  report is uploaded on failure.
 
-**Check:** `bun run lint`, `bun run typecheck` and `bun run test` all pass
-from the repo root.
+**Checked:** each suite was made to fail on purpose (broken search, removed
+password hook, form ignoring the server message) and caught it. The CI steps
+were replayed on a fresh clone with no `.env`, `CI=true` and a new database.
+
+**Found on the way:** Better Auth silently disables its origin check when
+`NODE_ENV` is `test`. The origin test caught it; `auth.ts` now pins
+`disableOriginCheck: false`.
 
 # Connecting the client
 
