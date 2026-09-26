@@ -5,18 +5,19 @@ type AuthCardProps = {
   title: string
   subtitle: string
   children: ReactNode
-  footerPrompt: string
-  footerLinkLabel: string
-  footerLinkTo: string
+  /** The "No account? Create one" line. Omit it to hide the line. */
+  footer?: {
+    prompt: string
+    linkLabel: string
+    linkTo: string
+  }
 }
 
 function AuthCard({
   title,
   subtitle,
   children,
-  footerPrompt,
-  footerLinkLabel,
-  footerLinkTo,
+  footer,
 }: AuthCardProps) {
   return (
     <section className="mx-auto max-w-md px-4 py-16">
@@ -25,12 +26,14 @@ function AuthCard({
 
       <div className="mt-8 rounded-xl border border-line p-6">{children}</div>
 
-      <p className="mt-6 text-center text-sm text-muted">
-        {footerPrompt}{' '}
-        <Link to={footerLinkTo} className="text-sage-700 hover:underline">
-          {footerLinkLabel}
-        </Link>
-      </p>
+      {footer && (
+        <p className="mt-6 text-center text-sm text-muted">
+          {footer.prompt}{' '}
+          <Link to={footer.linkTo} className="text-sage-700 hover:underline">
+            {footer.linkLabel}
+          </Link>
+        </p>
+      )}
     </section>
   )
 }

@@ -119,8 +119,8 @@ function CareerPage() {
             className="mt-6 rounded-xl border border-line bg-shell p-6"
           >
             <p className="text-sage-700">
-              Thanks — your application for {applied} was validated and then
-              discarded. There is no backend to send it to.
+              Thanks — your application for {applied} was validated, but
+              applications are not sent anywhere yet.
             </p>
             <Button
               variant="secondary"

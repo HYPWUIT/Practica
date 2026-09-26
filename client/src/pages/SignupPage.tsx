@@ -26,11 +26,17 @@ function SignupPage() {
 
   return (
     <AuthCard
-      title="Create account"
-      subtitle="Create an account with your email and a password."
-      footerPrompt="Already have one?"
-      footerLinkLabel="Sign in"
-      footerLinkTo="/login"
+      title={auth.user ? 'Your account' : 'Create account'}
+      subtitle={
+        auth.user
+          ? 'You are signed in.'
+          : 'Create an account with your email and a password.'
+      }
+      footer={
+        auth.user
+          ? undefined
+          : { prompt: 'Already have one?', linkLabel: 'Sign in', linkTo: '/login' }
+      }
     >
       {auth.isSessionPending ? (
         <p className="text-sm text-muted">Checking your session…</p>

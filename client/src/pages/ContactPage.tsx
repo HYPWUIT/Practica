@@ -61,8 +61,8 @@ function ContactPage() {
               className="mt-6 rounded-xl border border-line bg-shell p-6"
             >
               <p className="text-sage-700">
-                Thanks — your message was validated and then discarded. There is
-                no backend to deliver it to.
+                Thanks — your message was validated, but messages are not sent
+                anywhere yet.
               </p>
               <Button
                 variant="secondary"

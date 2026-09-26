@@ -25,6 +25,39 @@ async function signIn(page: Page, email: string, withPassword: string) {
 
 const formError = (page: Page) => page.locator('form [role="alert"]')
 
+test('signed in, the pages stop offering to sign in or sign up', async ({ page }) => {
+  const email = uniqueEmail()
+  await signUp(page, email)
+  await expect(page.getByText('Signed in as')).toBeVisible()
+
+  // The auth card: account heading, no "Already have one? Sign in".
+  await expect(page.getByRole('heading', { level: 1 })).toHaveText('Your account')
+  await expect(page.getByText('Already have one?')).toHaveCount(0)
+
+  await page.goto('/login')
+  await expect(page.getByRole('heading', { level: 1 })).toHaveText('Your account')
+  await expect(page.getByText('No account?')).toHaveCount(0)
+
+  // Navbar and footer.
+  const header = page.getByRole('banner')
+  const footer = page.getByRole('contentinfo')
+  await expect(header.getByRole('link', { name: 'Account' })).toBeVisible()
+  await expect(header.getByRole('link', { name: 'Sign in' })).toHaveCount(0)
+  await expect(footer.getByRole('link', { name: 'Your account' })).toBeVisible()
+  await expect(footer.getByRole('link', { name: 'Create account' })).toHaveCount(0)
+
+  // Signing out brings them all back.
+  await page.getByRole('button', { name: 'Sign out' }).click()
+  await expect(page.getByText('No account?')).toBeVisible()
+  await expect(header.getByRole('link', { name: 'Sign in' })).toBeVisible()
+  await expect(footer.getByRole('link', { name: 'Create account' })).toBeVisible()
+})
+
+test('the footer no longer calls the shop a frontend project', async ({ page }) => {
+  await page.goto('/')
+  await expect(page.getByRole('contentinfo')).not.toContainText('frontend')
+})
+
 test('sign up, stay signed in across a reload, sign out', async ({ page }) => {
   const email = uniqueEmail()
   await signUp(page, email)

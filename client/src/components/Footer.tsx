@@ -1,4 +1,5 @@
 import { Link } from 'react-router'
+import { useAuth } from '../hooks/useAuth'
 import Logo from './Logo'
 
 const columns = [
@@ -18,16 +19,20 @@ const columns = [
       { to: '/contact', label: 'Contact' },
     ],
   },
-  {
-    heading: 'Account',
-    links: [
-      { to: '/login', label: 'Sign in' },
-      { to: '/signup', label: 'Create account' },
-    ],
-  },
 ]
 
 function Footer() {
+  const { user } = useAuth()
+  const account = {
+    heading: 'Account',
+    links: user
+      ? [{ to: '/login', label: 'Your account' }]
+      : [
+          { to: '/login', label: 'Sign in' },
+          { to: '/signup', label: 'Create account' },
+        ],
+  }
+
   return (
     <footer className="mt-24 border-t border-line bg-shell">
       <div className="mx-auto grid max-w-6xl gap-10 px-4 py-14 sm:grid-cols-2 lg:grid-cols-4">
@@ -39,7 +44,7 @@ function Footer() {
           </p>
         </div>
 
-        {columns.map((column) => (
+        {[...columns, account].map((column) => (
           <div key={column.heading}>
             <h3 className="font-sans text-xs font-semibold tracking-widest text-ink uppercase">
               {column.heading}
@@ -59,8 +64,7 @@ function Footer() {
 
       <div className="border-t border-line">
         <p className="mx-auto max-w-6xl px-4 py-6 text-xs text-muted">
-          © {new Date().getFullYear()} Sage &amp; Oak. A frontend practice
-          project — no orders are really placed.
+          © {new Date().getFullYear()} Sage &amp; Oak. All rights reserved.
         </p>
       </div>
     </footer>

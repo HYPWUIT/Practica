@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { Link, NavLink, useLocation } from 'react-router'
+import { useAuth } from '../hooks/useAuth'
 import { useCart } from '../hooks/useCart'
 import Logo from './Logo'
 import ThemeToggle from './ThemeToggle'
@@ -21,6 +22,8 @@ const linkClasses = ({ isActive }: { isActive: boolean }) =>
 
 function Navbar() {
   const { count } = useCart()
+  const { user, isSessionPending } = useAuth()
+  const accountLabel = user ? 'Account' : 'Sign in'
   const [menuOpen, setMenuOpen] = useState(false)
   const location = useLocation()
 
@@ -51,11 +54,15 @@ function Navbar() {
         <div className="ml-auto flex shrink-0 items-center gap-2 text-sm sm:gap-3 lg:ml-0">
           <ThemeToggle className="-mr-1" />
 
+          {/* Invisible until the session check returns, so a signed-in visitor
+              does not see "Sign in" flash on every page load. */}
           <Link
             to="/login"
-            className="hidden text-muted hover:text-sage-600 sm:inline"
+            className={`hidden text-muted hover:text-sage-600 sm:inline ${
+              isSessionPending ? 'invisible' : ''
+            }`}
           >
-            Sign in
+            {accountLabel}
           </Link>
 
           <Link
@@ -113,7 +120,7 @@ function Navbar() {
               to="/login"
               className="block rounded-lg px-3 py-2.5 text-ink transition-colors hover:bg-shell"
             >
-              Sign in
+              {accountLabel}
             </NavLink>
           </li>
         </ul>

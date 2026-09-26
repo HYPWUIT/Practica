@@ -27,11 +27,17 @@ function LoginPage() {
 
   return (
     <AuthCard
-      title="Sign in"
-      subtitle="Welcome back. Sign in with your email and password."
-      footerPrompt="No account?"
-      footerLinkLabel="Create one"
-      footerLinkTo="/signup"
+      title={auth.user ? 'Your account' : 'Sign in'}
+      subtitle={
+        auth.user
+          ? 'You are signed in.'
+          : 'Welcome back. Sign in with your email and password.'
+      }
+      footer={
+        auth.user
+          ? undefined
+          : { prompt: 'No account?', linkLabel: 'Create one', linkTo: '/signup' }
+      }
     >
       {auth.isSessionPending ? (
         <p className="text-sm text-muted">Checking your session…</p>

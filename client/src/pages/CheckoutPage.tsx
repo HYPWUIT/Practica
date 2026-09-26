@@ -70,8 +70,8 @@ function CheckoutPage() {
         <p className="mt-4 text-muted">
           Your order number is{' '}
           <span className="text-ink tabular-nums">{orderNumber}</span>. No
-          payment was taken and nothing will be delivered — this shop is a
-          frontend practice project.
+          payment was taken and nothing will be delivered — checkout is not
+          connected to payments yet.
         </p>
         <Link to="/catalog" className={buttonClasses({ className: 'mt-8' })}>
           Keep shopping
