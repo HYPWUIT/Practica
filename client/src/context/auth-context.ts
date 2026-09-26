@@ -5,8 +5,6 @@ import { createContext } from 'react'
  * fast-refresh clean.
  */
 
-export type AuthStatus = 'idle' | 'submitting' | 'success' | 'error'
-
 export type Credentials = {
   email: string
   password: string
@@ -16,20 +14,23 @@ export type Registration = Credentials & {
   name: string
 }
 
-/** Display-only identity from the last successful submit. Never a session. */
-export type SubmittedIdentity = {
-  name?: string
+export type AuthUser = {
+  name: string
   email: string
 }
 
 export type AuthContextValue = {
-  status: AuthStatus
-  message: string | null
-  submitted: SubmittedIdentity | null
-  signIn: (credentials: Credentials) => Promise<void>
-  signUp: (registration: Registration) => Promise<void>
-  /** Returns the form to its initial state. */
-  reset: () => void
+  /** The signed-in user, or `null` when there is no session. */
+  user: AuthUser | null
+  /** True until the first session check has come back. */
+  isSessionPending: boolean
+  /** The server's message from the last failed sign-in or sign-up. */
+  error: string | null
+  /** Resolve `true` on success; on failure `error` is set instead. */
+  signIn: (credentials: Credentials) => Promise<boolean>
+  signUp: (registration: Registration) => Promise<boolean>
+  signOut: () => Promise<void>
+  clearError: () => void
 }
 
 export const AuthContext = createContext<AuthContextValue | null>(null)

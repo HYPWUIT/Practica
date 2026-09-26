@@ -4,6 +4,7 @@ import { useForm } from 'react-hook-form'
 import AuthCard from '../components/AuthCard'
 import Button from '../components/ui/Button'
 import Input from '../components/ui/Input'
+import SignedInPanel from '../components/SignedInPanel'
 import { useAuth } from '../hooks/useAuth'
 import { loginSchema } from '@sage-oak/shared'
 
@@ -18,27 +19,24 @@ function LoginPage() {
     defaultValues: { email: '', password: '' },
   })
 
-  // Auth state is app-wide, so clear anything left over from a previous visit.
+  // Auth state is app-wide, so clear an error left over from a previous visit.
   useEffect(() => {
-    auth.reset()
+    auth.clearError()
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   return (
     <AuthCard
       title="Sign in"
-      subtitle="Nothing here is real — the form validates, and that is where it ends."
+      subtitle="Welcome back. Sign in with your email and password."
       footerPrompt="No account?"
       footerLinkLabel="Create one"
       footerLinkTo="/signup"
     >
-      {auth.status === 'success' ? (
-        <div role="status" className="space-y-4 text-sm">
-          <p className="text-sage-700">{auth.message}</p>
-          <Button variant="secondary" onClick={auth.reset}>
-            Sign in again
-          </Button>
-        </div>
+      {auth.isSessionPending ? (
+        <p className="text-sm text-muted">Checking your session…</p>
+      ) : auth.user ? (
+        <SignedInPanel user={auth.user} />
       ) : (
         <form
           noValidate
@@ -60,6 +58,11 @@ function LoginPage() {
             error={errors.password?.message}
             {...register('password')}
           />
+          {auth.error && (
+            <p role="alert" className="text-sm text-red-700">
+              {auth.error}
+            </p>
+          )}
           <Button type="submit" fullWidth loading={isSubmitting}>
             Sign in
           </Button>

@@ -4,6 +4,7 @@ import { useForm } from 'react-hook-form'
 import AuthCard from '../components/AuthCard'
 import Button from '../components/ui/Button'
 import Input from '../components/ui/Input'
+import SignedInPanel from '../components/SignedInPanel'
 import { useAuth } from '../hooks/useAuth'
 import { signupSchema } from '@sage-oak/shared'
 
@@ -19,25 +20,22 @@ function SignupPage() {
   })
 
   useEffect(() => {
-    auth.reset()
+    auth.clearError()
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   return (
     <AuthCard
       title="Create account"
-      subtitle="No account is really created — this is the form and its rules, nothing more."
+      subtitle="Create an account with your email and a password."
       footerPrompt="Already have one?"
       footerLinkLabel="Sign in"
       footerLinkTo="/login"
     >
-      {auth.status === 'success' ? (
-        <div role="status" className="space-y-4 text-sm">
-          <p className="text-sage-700">{auth.message}</p>
-          <Button variant="secondary" onClick={auth.reset}>
-            Start over
-          </Button>
-        </div>
+      {auth.isSessionPending ? (
+        <p className="text-sm text-muted">Checking your session…</p>
+      ) : auth.user ? (
+        <SignedInPanel user={auth.user} />
       ) : (
         <form
           noValidate
@@ -73,6 +71,11 @@ function SignupPage() {
             error={errors.confirmPassword?.message}
             {...register('confirmPassword')}
           />
+          {auth.error && (
+            <p role="alert" className="text-sm text-red-700">
+              {auth.error}
+            </p>
+          )}
           <Button type="submit" fullWidth loading={isSubmitting}>
             Create account
           </Button>

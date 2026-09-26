@@ -1,61 +1,68 @@
 import type { ReactNode } from 'react'
 import { useMemo, useState } from 'react'
-import type {
-  AuthContextValue,
-  AuthStatus,
-  SubmittedIdentity,
-} from './auth-context'
+import { authClient } from '../lib/auth-client'
+import type { AuthContextValue } from './auth-context'
 import { AuthContext } from './auth-context'
 
 /**
- * Deliberately thin.
- *
- * There is no backend and no session: `signIn` and `signUp` simulate a round
- * trip so the forms in Phase 3 have a submitting state and a result to render,
- * and nothing in the app is gated on the outcome. `submitted` is for greeting
- * the user on a success screen, not for authorisation — see project-scope.md.
- *
- * The shape is what a real auth client would expose, so wiring one in later
- * means replacing the bodies of these two functions.
+ * Wraps the Better Auth client so pages depend on this small interface rather
+ * than on the library. The session lives in an HTTP-only cookie set by the
+ * server; `useSession` re-reads it after every sign-in, sign-up and sign-out.
  */
 
-/** Enough delay that the pending state is actually visible. */
-const SIMULATED_LATENCY_MS = 700
+const UNAVAILABLE = 'The server is not responding. Try again in a moment.'
 
-function delay(ms: number): Promise<void> {
-  return new Promise((resolve) => setTimeout(resolve, ms))
-}
+type Result = { error: { message?: string; status: number } | null }
 
 export function AuthProvider({ children }: { children: ReactNode }) {
-  const [status, setStatus] = useState<AuthStatus>('idle')
-  const [message, setMessage] = useState<string | null>(null)
-  const [submitted, setSubmitted] = useState<SubmittedIdentity | null>(null)
+  const { data: session, isPending } = authClient.useSession()
+  const [error, setError] = useState<string | null>(null)
 
   const value = useMemo<AuthContextValue>(() => {
-    async function submit(identity: SubmittedIdentity, successMessage: string) {
-      setStatus('submitting')
-      setMessage(null)
-      await delay(SIMULATED_LATENCY_MS)
-      setSubmitted(identity)
-      setMessage(successMessage)
-      setStatus('success')
+    /** Runs an auth call and turns its outcome into `true` or an `error`. */
+    async function attempt(call: () => Promise<Result>, fallback: string) {
+      setError(null)
+      try {
+        const result = await call()
+        if (result.error) {
+          // A 5xx (including the dev proxy's 502 when the API is down) has no
+          // message worth showing; a 4xx carries the server's own wording.
+          setError(
+            result.error.status >= 500
+              ? UNAVAILABLE
+              : result.error.message || fallback,
+          )
+          return false
+        }
+        return true
+      } catch {
+        setError(UNAVAILABLE)
+        return false
+      }
     }
 
     return {
-      status,
-      message,
-      submitted,
-      signIn: ({ email }) =>
-        submit({ email }, 'Signed in — for show only, no session was created.'),
-      signUp: ({ name, email }) =>
-        submit({ name, email }, `Welcome, ${name}. No account was really made.`),
-      reset: () => {
-        setStatus('idle')
-        setMessage(null)
-        setSubmitted(null)
+      user: session
+        ? { name: session.user.name, email: session.user.email }
+        : null,
+      isSessionPending: isPending,
+      error,
+      signIn: ({ email, password }) =>
+        attempt(
+          () => authClient.signIn.email({ email, password }),
+          'Sign in failed',
+        ),
+      signUp: ({ name, email, password }) =>
+        attempt(
+          () => authClient.signUp.email({ name, email, password }),
+          'Could not create the account',
+        ),
+      signOut: async () => {
+        await authClient.signOut()
       },
+      clearError: () => setError(null),
     }
-  }, [status, message, submitted])
+  }, [session, isPending, error])
 
   return <AuthContext value={value}>{children}</AuthContext>
 }
