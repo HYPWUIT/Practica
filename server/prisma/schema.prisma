@@ -1,0 +1,83 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+// The catalogue vocabulary. These must match the Zod enums in
+// @sage-oak/shared (product.ts); the seed validates every row against them
+// and the server's row mapper fails to typecheck if the two drift apart.
+
+enum Category {
+  sofas
+  chairs
+  tables
+  beds
+  storage
+  lighting
+}
+
+enum Material {
+  oak
+  walnut
+  ash
+  rattan
+  linen
+  leather
+  steel
+  marble
+}
+
+enum Color {
+  natural
+  walnut
+  charcoal
+  sage
+  cream
+  ochre
+  ink
+  terracotta
+}
+
+model Product {
+  id          String   @id
+  /// URL segment for /product/:slug.
+  slug        String   @unique
+  name        String
+  /// Minor units (cents).
+  price       Int
+  category    Category
+  material    Material
+  color       Color
+  bestseller  Boolean  @default(false)
+  description String
+  /// Centimetres. Flattened here; the API returns them as `dimensions`.
+  width       Int
+  depth       Int
+  height      Int
+  inStock     Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([category])
+  @@map("product")
+}
+
+model Job {
+  id        String   @id
+  title     String
+  team      String
+  location  String
+  /// "Full-time" | "Part-time" | "Apprenticeship", checked by jobTypeSchema.
+  type      String
+  summary   String
+  /// Listing order on the careers page.
+  sortOrder Int
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("job")
+}

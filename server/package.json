@@ -7,9 +7,16 @@
     "dev": "bun --watch src/index.ts",
     "start": "bun src/index.ts",
     "lint": "oxlint",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "db:generate": "bun --bun --env-file=.env prisma generate",
+    "db:migrate": "bun --bun --env-file=.env prisma migrate dev",
+    "db:seed": "bun --bun --env-file=.env prisma db seed",
+    "db:studio": "bun --bun --env-file=.env prisma studio",
+    "postinstall": "bun --bun --env-file=.env prisma generate"
   },
   "dependencies": {
+    "@prisma/adapter-pg": "^7.10.0",
+    "@prisma/client": "^7.10.0",
     "@sage-oak/shared": "workspace:*",
     "express": "^5.2.1",
     "zod": "^4.6.5"
@@ -18,6 +25,7 @@
     "@types/bun": "^1.4.2",
     "@types/express": "^5.0.6",
     "oxlint": "^1.81.0",
+    "prisma": "^7.10.0",
     "typescript": "~6.0.2"
   }
 }
