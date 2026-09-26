@@ -63,11 +63,15 @@ export default defineConfig({
     {
       name: 'Client',
       cwd: '../client',
-      command: `bun run dev --port ${CLIENT_PORT} --strictPort`,
+      // The production build, not `vite dev`: under parallel first visits the
+      // dev server's on-demand dependency optimisation reloads pages and
+      // stalls module loads, which made tests fail at random. `vite preview`
+      // inherits the same /api proxy.
+      command: `bun run build && bun run preview --port ${CLIENT_PORT} --strictPort`,
       url: clientUrl,
       env: { ...(process.env as Record<string, string>), API_URL: apiUrl },
       reuseExistingServer: false,
-      timeout: 60_000,
+      timeout: 120_000,
     },
   ],
 })

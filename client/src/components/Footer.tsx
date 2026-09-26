@@ -26,7 +26,7 @@ function Footer() {
   const account = {
     heading: 'Account',
     links: user
-      ? [{ to: '/login', label: 'Your account' }]
+      ? [{ to: '/account', label: 'Your account' }]
       : [
           { to: '/login', label: 'Sign in' },
           { to: '/signup', label: 'Create account' },

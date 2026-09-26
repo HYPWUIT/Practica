@@ -123,9 +123,9 @@ Parametrii invalizi primesc 400 cu numele câmpului: `{ error, issues }`.
 
 ## Ce conține
 
-12 rute: Acasă, Magazin (catalog cu căutare și filtre), Detaliu produs, Coș,
+13 rute: Acasă, Magazin (catalog cu căutare și filtre), Detaliu produs, Coș,
 Checkout în 3 pași, Best Sales, Despre, Cariere, Contact, Autentificare,
-Înregistrare, 404.
+Înregistrare, Cont, 404.
 
 - **Catalog din baza de date** — căutare și filtre pe categorie, preț, material
   și culoare, cu starea ținută în URL (un link filtrat poate fi copiat și
@@ -133,6 +133,10 @@ Checkout în 3 pași, Best Sales, Despre, Cariere, Contact, Autentificare,
 - **Conturi reale** — înregistrare și autentificare cu email și parolă; sesiunea
   e un cookie HTTP-only. Serverul aplică aceleași reguli de parolă ca
   formularul.
+- **Pagina de cont** (`/account`, doar pentru utilizatori logați) — schimbarea
+  numelui, schimbarea parolei (cu opțiunea de delogare de pe celelalte
+  dispozitive) și delogare. Fără sesiune, trimite la autentificare și revine
+  apoi pe pagină.
 - **Coș** cu cantități, subtotal și confirmare la golire.
 - **Checkout** pe 3 pași, pe o singură instanță `react-hook-form`; pasul înapoi
   nu pierde datele completate.
@@ -163,7 +167,7 @@ Practica/
 │       ├── data/            taxonomia și opțiunile de filtrare
 │       ├── hooks/           useCart, useAuth, useToast, useTheme
 │       ├── lib/             filtrare, client de autentificare, formatare
-│       └── pages/           cele 12 rute
+│       └── pages/           cele 13 rute
 ├── server/                  API-ul (Express + Prisma)
 │   ├── prisma/              schema, migrările, seed-ul
 │   └── src/

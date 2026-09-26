@@ -1,15 +1,17 @@
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useEffect } from 'react'
 import { useForm } from 'react-hook-form'
+import { Navigate, useSearchParams } from 'react-router'
 import AuthCard from '../components/AuthCard'
 import Button from '../components/ui/Button'
 import Input from '../components/ui/Input'
-import SignedInPanel from '../components/SignedInPanel'
 import { useAuth } from '../hooks/useAuth'
+import { nextPath } from '../lib/redirect'
 import { loginSchema } from '@sage-oak/shared'
 
 function LoginPage() {
   const auth = useAuth()
+  const [searchParams] = useSearchParams()
   const {
     register,
     handleSubmit,
@@ -25,24 +27,22 @@ function LoginPage() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
+  // Signed in — by this form or already — so on to where they were going.
+  if (auth.user) return <Navigate to={nextPath(searchParams)} replace />
+
   return (
     <AuthCard
-      title={auth.user ? 'Your account' : 'Sign in'}
-      subtitle={
-        auth.user
-          ? 'You are signed in.'
-          : 'Welcome back. Sign in with your email and password.'
-      }
-      footer={
-        auth.user
-          ? undefined
-          : { prompt: 'No account?', linkLabel: 'Create one', linkTo: '/signup' }
-      }
+      title="Sign in"
+      subtitle="Welcome back. Sign in with your email and password."
+      footer={{
+        prompt: 'No account?',
+        linkLabel: 'Create one',
+        // Keep ?next= when switching between sign-in and sign-up.
+        linkTo: `/signup${searchParams.size ? `?${searchParams}` : ''}`,
+      }}
     >
       {auth.isSessionPending ? (
         <p className="text-sm text-muted">Checking your session…</p>
-      ) : auth.user ? (
-        <SignedInPanel user={auth.user} />
       ) : (
         <form
           noValidate

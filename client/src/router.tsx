@@ -16,8 +16,7 @@ const page =
   })
 
 /**
- * Checkout is deliberately not guarded: auth is validation-only for now, so
- * there is no logged-in state to guard it with. See project-scope.md.
+ * Checkout is deliberately not guarded: guests can still check out.
  */
 const router = createBrowserRouter([
   {
@@ -38,6 +37,8 @@ const router = createBrowserRouter([
       { path: 'contact', lazy: page(() => import('./pages/ContactPage')) },
       { path: 'login', lazy: page(() => import('./pages/LoginPage')) },
       { path: 'signup', lazy: page(() => import('./pages/SignupPage')) },
+      // Redirects to /login?next=/account when there is no session.
+      { path: 'account', lazy: page(() => import('./pages/AccountPage')) },
       { path: '*', lazy: page(() => import('./pages/NotFoundPage')) },
     ],
   },

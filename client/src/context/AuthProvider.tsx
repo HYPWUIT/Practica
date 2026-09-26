@@ -14,36 +14,42 @@ const UNAVAILABLE = 'The server is not responding. Try again in a moment.'
 
 type Result = { error: { message?: string; status: number } | null }
 
+/** Runs an auth call; resolves `null` on success, else a message to show. */
+async function run(
+  call: () => Promise<Result>,
+  fallback: string,
+): Promise<string | null> {
+  try {
+    const { error } = await call()
+    if (!error) return null
+    // A 5xx (including the dev proxy's 502 when the API is down) has no
+    // message worth showing; a 4xx carries the server's own wording.
+    return error.status >= 500 ? UNAVAILABLE : error.message || fallback
+  } catch {
+    return UNAVAILABLE
+  }
+}
+
 export function AuthProvider({ children }: { children: ReactNode }) {
   const { data: session, isPending } = authClient.useSession()
   const [error, setError] = useState<string | null>(null)
 
   const value = useMemo<AuthContextValue>(() => {
-    /** Runs an auth call and turns its outcome into `true` or an `error`. */
+    /** For sign-in and sign-up: the outcome as `true`, or in `error`. */
     async function attempt(call: () => Promise<Result>, fallback: string) {
       setError(null)
-      try {
-        const result = await call()
-        if (result.error) {
-          // A 5xx (including the dev proxy's 502 when the API is down) has no
-          // message worth showing; a 4xx carries the server's own wording.
-          setError(
-            result.error.status >= 500
-              ? UNAVAILABLE
-              : result.error.message || fallback,
-          )
-          return false
-        }
-        return true
-      } catch {
-        setError(UNAVAILABLE)
-        return false
-      }
+      const message = await run(call, fallback)
+      setError(message)
+      return message === null
     }
 
     return {
       user: session
-        ? { name: session.user.name, email: session.user.email }
+        ? {
+            name: session.user.name,
+            email: session.user.email,
+            createdAt: new Date(session.user.createdAt),
+          }
         : null,
       isSessionPending: isPending,
       error,
@@ -61,6 +67,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         await authClient.signOut()
       },
       clearError: () => setError(null),
+      updateName: (name) =>
+        run(() => authClient.updateUser({ name }), 'Could not save your name'),
+      changePassword: (change) =>
+        run(
+          () => authClient.changePassword(change),
+          'Could not change your password',
+        ),
     }
   }, [session, isPending, error])
 

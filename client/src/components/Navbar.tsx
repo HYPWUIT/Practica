@@ -23,7 +23,9 @@ const linkClasses = ({ isActive }: { isActive: boolean }) =>
 function Navbar() {
   const { count } = useCart()
   const { user, isSessionPending } = useAuth()
-  const accountLabel = user ? 'Account' : 'Sign in'
+  const account = user
+    ? { to: '/account', label: 'Account' }
+    : { to: '/login', label: 'Sign in' }
   const [menuOpen, setMenuOpen] = useState(false)
   const location = useLocation()
 
@@ -57,12 +59,12 @@ function Navbar() {
           {/* Invisible until the session check returns, so a signed-in visitor
               does not see "Sign in" flash on every page load. */}
           <Link
-            to="/login"
+            to={account.to}
             className={`hidden text-muted hover:text-sage-600 sm:inline ${
               isSessionPending ? 'invisible' : ''
             }`}
           >
-            {accountLabel}
+            {account.label}
           </Link>
 
           <Link
@@ -117,10 +119,10 @@ function Navbar() {
           ))}
           <li className="border-t border-line pt-1">
             <NavLink
-              to="/login"
+              to={account.to}
               className="block rounded-lg px-3 py-2.5 text-ink transition-colors hover:bg-shell"
             >
-              {accountLabel}
+              {account.label}
             </NavLink>
           </li>
         </ul>

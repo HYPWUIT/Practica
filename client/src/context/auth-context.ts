@@ -17,6 +17,13 @@ export type Registration = Credentials & {
 export type AuthUser = {
   name: string
   email: string
+  createdAt: Date
+}
+
+export type PasswordChange = {
+  currentPassword: string
+  newPassword: string
+  revokeOtherSessions: boolean
 }
 
 export type AuthContextValue = {
@@ -31,6 +38,12 @@ export type AuthContextValue = {
   signUp: (registration: Registration) => Promise<boolean>
   signOut: () => Promise<void>
   clearError: () => void
+  /**
+   * Account changes resolve to `null` on success or the error message, rather
+   * than using `error`, so each account form reports its own failure.
+   */
+  updateName: (name: string) => Promise<string | null>
+  changePassword: (change: PasswordChange) => Promise<string | null>
 }
 
 export const AuthContext = createContext<AuthContextValue | null>(null)
